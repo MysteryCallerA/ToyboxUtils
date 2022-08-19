@@ -15,7 +15,7 @@ namespace Utils.text {
 		public const string NumRowLower = "1234567890-=";
 		public const string NumRowUpper = "!@#$%^&*()_+";
 		public const string SpecialCharsLower = ",./;'[]\\";
-		public const string SpecialCharsUpper = "<>?:\"{}|";
+		public const string SpecialCharsUpper = "<>?:{}|";
 		public const char Newline = '\n';
 
 		public Texture2D Graphic;
@@ -57,6 +57,16 @@ namespace Utils.text {
 			}
 		}
 
+		public Font(Texture2D graphic, string charset, char missingChar, Rectangle pixel) {
+			Graphic = graphic;
+			Missing = missingChar;
+			Pixel = pixel;
+
+			CharData = ParseSizes(graphic, charset);
+			CharHeight = CharData[charset[0]].Height;
+			AverageCharWidth = CharData[charset[0]].Width;
+		}
+
 		public void SetSymbols(params Tuple<char, Rectangle>[] chars) {
 			foreach (Tuple<char, Rectangle> c in chars) {
 				CharData.Add(c.Item1, c.Item2);
@@ -81,7 +91,8 @@ namespace Utils.text {
 				);
 		}
 
-		private void ParseSizes(Texture2D g, string charset) {
+		private Dictionary<char, Rectangle> ParseSizes(Texture2D g, string charset) {
+			charset = charset.Replace("\n", String.Empty);
 			var chardata = new Dictionary<char, Rectangle>();
 			var gdata = graphic.Utils.GetPixels(g);
 
@@ -96,8 +107,43 @@ namespace Utils.text {
 				}
 				if (clear) hsplits.Add(y);
 			}
+			hsplits.Add(g.Height);
 
+			int nextchar = 0;
 
+			for (int hsplit = 0; hsplit < hsplits.Count; hsplit++) {
+				Rectangle charrect = new Rectangle(0, 0, 0, hsplits[hsplit]);
+				if (hsplit != 0) {
+					charrect.Y = hsplits[hsplit - 1] + 1;
+					charrect.Height -= charrect.Y;
+				}
+
+				for (int x = 0; x < g.Width; x++) {
+					bool clear = true;
+					for (int y = charrect.Y; y < charrect.Bottom; y++) {
+						if (graphic.Utils.GetPixel(gdata, x, y, g.Width).A > 0) {
+							clear = false;
+							break;
+						}
+					}
+
+					if (x == g.Width - 1) { //Catch last char on line if its right seperation would be outofbounds
+						x++;
+						clear = true;
+					}
+
+					if (clear) {
+						charrect.Width = x - charrect.X;
+						if (charrect.Width == 0) break; //Starts next line if two clear lines in a row
+						chardata.Add(charset[nextchar], charrect);
+						charrect.X = charrect.Right + 1;
+						nextchar++;
+						if (nextchar >= charset.Length) return chardata;
+					}
+				}
+			}
+
+			return chardata;
 		}
 
 	}

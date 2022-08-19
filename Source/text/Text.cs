@@ -20,6 +20,7 @@ namespace Utils.text {
 		public int WordSpace = 1;
 		public int LineSpace = 1;
 		public int LetterSpace = 1;
+		public int QuoteSpace = 1;
 
 		public Point Scroll = Point.Zero;
 		/// <summary> These positions are relative. </summary>
@@ -99,6 +100,12 @@ namespace Utils.text {
 			if (c == ' ' || c == Font.Newline) {
 				return GetCharDest(c, pos);
 			}
+			if (c == '\"') {
+				var output = DrawChar(s, '\'', pos, color);
+				pos.X += output.Width + (QuoteSpace * Scale);
+				var output2 = DrawChar(s, '\'', pos, color);
+				return Rectangle.Union(output, output2);
+			}
 
 			Rectangle source = GetCharSource(c);
 			Rectangle dest = GetCharDest(c, pos, source);
@@ -113,6 +120,10 @@ namespace Utils.text {
 		}
 
 		private Rectangle GetCharSource(char c) {
+			if (c == '\"') {
+				return GetCharSource('\'');
+			}
+
 			if (!Font.Contains(c)) {
 				return Font[Font.Missing];
 			} else {
@@ -130,6 +141,12 @@ namespace Utils.text {
 			}
 			if (c == Font.Newline) {
 				return new Rectangle(pos.X, pos.Y, Scale, Font.CharHeight * Scale);
+			}
+			if (c == '\"') {
+				var output = GetCharDest('\'', pos, source);
+				pos.X += output.Width + (QuoteSpace * Scale);
+				var output2 = GetCharDest('\'', pos, source);
+				return Rectangle.Union(output, output2);
 			}
 
 			return new Rectangle(pos.X, pos.Y, source.Width * Scale, source.Height * Scale);
