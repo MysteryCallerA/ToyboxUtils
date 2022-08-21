@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TextCopy;
 using Utils.input;
 
 namespace Utils.text {
@@ -247,7 +246,7 @@ namespace Utils.text {
 		private void PressedCut() {
 			int start = Math.Min(Selection, SelectionStart);
 			int end = Math.Max(Selection, SelectionStart);
-			ClipboardService.SetText(Content.Substring(start, end - start));
+			System.Windows.Forms.Clipboard.SetText(Content.Substring(start, end - start));
 
 			Content = Content.Remove(start, end - start);
 			Selection = start;
@@ -260,11 +259,11 @@ namespace Utils.text {
 		private void PressedCopy() {
 			int start = Math.Min(Selection, SelectionStart);
 			int end = Math.Max(Selection, SelectionStart);
-			ClipboardService.SetText(Content.Substring(start, end - start));
+			System.Windows.Forms.Clipboard.SetText(Content.Substring(start, end - start));
 		}
 
 		private void PressedPaste() {
-			string paste = ClipboardService.GetText();
+			string paste = System.Windows.Forms.Clipboard.GetText();
 			if (SelectingBlock && Selection != SelectionStart) {
 				DeleteSelection();
 			}
