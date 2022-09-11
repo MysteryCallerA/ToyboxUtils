@@ -10,6 +10,9 @@ namespace Utils.style {
 	
 	public class Style {
 
+		public virtual void Select(string state, string element) {
+		}
+
 		public virtual int Scale {
 			get; set;
 		} = 1;

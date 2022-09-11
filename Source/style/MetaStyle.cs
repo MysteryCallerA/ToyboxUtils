@@ -11,6 +11,10 @@ namespace Utils.style {
 
 		protected abstract Style GetCurrentStyle();
 
+		public override void Select(string state, string element) {
+			GetCurrentStyle().Select(state, element);
+		}
+
 		public override int Scale {
 			get { return GetCurrentStyle().Scale; }
 			set { GetCurrentStyle().Scale = value; }

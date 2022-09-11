@@ -29,7 +29,11 @@ namespace Utils.style {
 			return Styles[State];
 		}
 
-		
+		public override void Select(string state, string element) {
+			State = state;
+		}
+
+
 
 	}
 }
