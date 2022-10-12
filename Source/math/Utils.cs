@@ -69,5 +69,12 @@ namespace Utils.math {
 			return new Point((int)Math.Round(Lerp(start.X, end.X, t)), (int)Math.Round(Lerp(start.Y, end.Y, t)));
 		}
 
+		public static void GetEdges(Rectangle input, int borderthickness, out Rectangle top, out Rectangle bot, out Rectangle left, out Rectangle right) {
+			top = new Rectangle(input.X, input.Y, input.Width, borderthickness);
+			bot = new Rectangle(input.X, input.Bottom - borderthickness, input.Width, borderthickness);
+			left = new Rectangle(input.X, input.Y + borderthickness, borderthickness, input.Height - (borderthickness * 2));
+			right = new Rectangle(input.Right - borderthickness, input.Y + borderthickness, borderthickness, input.Height - (borderthickness * 2));
+		}
+
 	}
 }
