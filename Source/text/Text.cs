@@ -43,17 +43,6 @@ namespace Utils.text {
 			}
 		}
 
-		public Rectangle GetBounds() { //HACK This doesn't take into account multiline widths
-			if (CharRects.Count == 0) return new Rectangle(Position.X, Position.Y, 0, Font.CharHeight * Scale);
-			return new Rectangle(Position.X, Position.Y, CharRects.Last().Right, CharRects.Last().Bottom);
-		}
-
-		public Point GetSize() { //HACK This doesn't take into account multiline widths
-			if (CharRects.Count == 0) return new Point(0, Font.CharHeight * Scale);
-			var r = Rectangle.Union(CharRects[0], CharRects.Last()).Size;
-			return r;
-		}
-
 		public int X {
 			get { return Position.X; }
 			set { Position.X = value; }
@@ -179,6 +168,17 @@ namespace Utils.text {
 			dest = masked;
 		}
 
+		public Rectangle GetBounds() { //HACK This doesn't take into account multiline widths
+			if (CharRects.Count == 0) return new Rectangle(Position.X, Position.Y, 0, Font.CharHeight * Scale);
+			return new Rectangle(Position.X, Position.Y, CharRects.Last().Right, CharRects.Last().Bottom);
+		}
+
+		public Point GetSize() { //HACK This doesn't take into account multiline widths
+			if (CharRects.Count == 0) return new Point(0, Font.CharHeight * Scale);
+			var r = Rectangle.Union(CharRects[0], CharRects.Last()).Size;
+			return r;
+		}
+
 		public void UpdateCharRects() {
 			int start = 0;
 			char prev = ' ';
@@ -212,6 +212,7 @@ namespace Utils.text {
 			CharRectContent = Content;
 		}
 
+		/// <summary> Gets bounds of character in Content </summary>
 		public Rectangle GetCharRect(int pos) {
 			Rectangle output;
 			if (pos < CharRects.Count) output = CharRects[pos];
@@ -279,6 +280,28 @@ namespace Utils.text {
 		/// <summary> Accounts for scale. </summary>
 		public int LineHeight {
 			get { return Font.CharHeight * Scale; }
+		}
+
+		public Point GetSize(string t) {
+			Point output = new Point();
+			Point currentline = new Point();
+			for (int i = 0; i < t.Length; i++) {
+				if (t[i] == Font.Newline) {
+					output.Y += LineHeight + LineSpace;
+					if (currentline.X > output.X) output.X = currentline.X;
+					currentline.X = 0;
+					continue;
+				}
+				if (currentline.X != 0) {
+					currentline.X += LetterSpace;
+				}
+
+				var rect = GetCharDest(t[i], currentline);
+				currentline.X = rect.Right;
+			}
+
+			if (currentline.X > output.X) output.X = currentline.X;
+			return output;
 		}
 
 	}
