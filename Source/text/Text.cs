@@ -284,6 +284,7 @@ namespace Utils.text {
 
 		public Point GetSize(string t) {
 			Point output = new Point();
+			output.Y += LineHeight;
 			Point currentline = new Point();
 			for (int i = 0; i < t.Length; i++) {
 				if (t[i] == Font.Newline) {
@@ -293,7 +294,7 @@ namespace Utils.text {
 					continue;
 				}
 				if (currentline.X != 0) {
-					currentline.X += LetterSpace;
+					currentline.X += LetterSpace * Scale;
 				}
 
 				var rect = GetCharDest(t[i], currentline);

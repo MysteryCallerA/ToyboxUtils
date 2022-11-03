@@ -7,19 +7,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Utils.graphic {
-	public interface ITextureObject:IDisposable {
 
-		void Draw(SpriteBatch s, Point dest, int frame, Vector2 scale);
+	public interface ITextureObject {
+	
+		public Texture2D Texture {
+			get;
+		}
 
-		void Draw(SpriteBatch s, Point dest, int frame, Vector2 scale, Color c, float rotation, SpriteEffects effects);
+		public Rectangle Source {
+			get;
+		}
 
-		int FrameCount { get; }
+		public int Width {
+			get;
+		}
 
-		int GetWidth(int frame, float scale);
-
-		int GetHeight(int frame, float scale);
-
-		Point GetDimensions(int frame, Vector2 scale);
-
+		public int Height {
+			get;
+		}
+	
 	}
 }
