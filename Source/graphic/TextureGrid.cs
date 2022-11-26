@@ -45,5 +45,9 @@ namespace Utils.graphic {
 			get { return Source.Height; }
 		}
 
+		public TextureSelection GetSelection(Point cell) {
+			return new TextureSelection(Texture, GetCell(cell));
+		}
+
 	}
 }
