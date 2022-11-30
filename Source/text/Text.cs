@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Utils.text {
-	public class Text {
+	public class Text { //TODO move text systems to Toybox and implement Renderer
 
 		public Font Font;
 		public int Scale = 1;
@@ -83,6 +83,13 @@ namespace Utils.text {
 				draw = DrawChar(s, c, new Point(draw.Right, draw.Y), color);
 				prev = c;
 			}
+		}
+
+		public void Draw(SpriteBatch s, Color color, Point pos, string text, int scale) {
+			var old = Scale;
+			Scale = scale;
+			Draw(s, color, pos, text);
+			Scale = old;
 		}
 
 		private Rectangle DrawChar(SpriteBatch s, char c, Point pos, Color color) {
