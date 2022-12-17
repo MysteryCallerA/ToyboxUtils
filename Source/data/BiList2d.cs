@@ -13,6 +13,8 @@ namespace Utils.data {
 		public bool AutoExpand = true;
 
 		public BiList2d() {
+			Data = new BiList<BiList<T>>();
+			Data.Add(new BiList<T>());
 		}
 
 		public BiList2d(int left, int top) {
