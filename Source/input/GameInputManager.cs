@@ -152,5 +152,13 @@ namespace Utils.input {
 		public VirtualKey(params Keys[] k) {
 			Keys.AddRange(k);
 		}
+
+		public bool Pressed {
+			get { return Down && !WasDown; }
+		}
+
+		public bool Released {
+			get { return !Down && WasDown; }
+		}
 	}
 }
