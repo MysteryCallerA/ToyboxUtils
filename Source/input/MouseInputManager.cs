@@ -10,6 +10,7 @@ namespace Utils.input {
 	public class MouseInputManager {
 
 		public bool Blocked { get; private set; }
+		private bool TempBlocked = false;
 
 		public bool Left { get; private set; }
 		public bool Right { get; private set; }
@@ -49,11 +50,30 @@ namespace Utils.input {
 			PrevScroll = m.ScrollWheelValue;
 
 			Blocked = false;
+			TempBlocked = false;
 		}
 
 		/// <summary> Marks as blocked for the remainder of the frame. </summary>
 		public void Block() {
 			Blocked = true;
+			if (TempBlocked) {
+				TempBlocked = false;
+			}
+		}
+
+		/// <summary> Marks as blocked if not already. Use UnTempBlock to undo without undoing a normal Block. </summary>
+		public void TempBlock() {
+			if (!Blocked) {
+				Blocked = true;
+				TempBlocked = true;
+			}
+		}
+
+		public void UnTempBlock() {
+			if (TempBlocked) {
+				Blocked = false;
+				TempBlocked = false;
+			}
 		}
 
 		public bool LeftPress {
