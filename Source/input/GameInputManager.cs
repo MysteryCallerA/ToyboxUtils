@@ -20,6 +20,10 @@ namespace Utils.input {
 			get; private set;
 		}
 
+		public VirtualKey this[T id] {
+			get { return VirtualKeys[id]; }
+		}
+
 		public void UpdateControlStates(KeyboardState kstate, MouseState mstate) {
 			OMState = MState;
 			KState = kstate;
