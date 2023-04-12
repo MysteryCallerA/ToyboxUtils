@@ -7,26 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Utils.graphic {
-	public class TextureFull:ITextureObject {
+	public class TextureFull:TextureObject {
 
-		public TextureFull(Texture2D texture) {
-			Texture = texture;
+		public TextureFull(Texture2D texture):base(texture) {
 		}
 
-		public Texture2D Texture {
-			get; set;
-		}
-
-		public Rectangle Source {
+		public override Rectangle Source {
 			get { return Texture.Bounds; }
-		}
-
-		public int Width {
-			get { return Texture.Width; } 
-		}
-
-		public int Height {
-			get { return Texture.Height; }
 		}
 	}
 }

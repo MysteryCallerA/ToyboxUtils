@@ -7,34 +7,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Utils.graphic {
-	public class TextureSelection:ITextureObject {
+	public class TextureSelection:TextureObject {
 
 		public Rectangle Selection;
 
-		public TextureSelection(Texture2D t, Rectangle selection) {
-			Texture = t;
+		public TextureSelection(Texture2D t, Rectangle selection):base(t) {
 			Selection = selection;
 		}
 
-		public TextureSelection(Texture2D t) {
-			Texture = t;
+		public TextureSelection(Texture2D t):base(t) {
 			Selection = Texture.Bounds;
 		}
 
-		public Texture2D Texture { 
-			get; set;
-		}
-
-		public Rectangle Source {
+		public override Rectangle Source {
 			get { return Selection; }
-		}
-
-		public int Width {
-			get { return Selection.Width; }
-		}
-
-		public int Height {
-			get { return Selection.Height; }
 		}
 	}
 }

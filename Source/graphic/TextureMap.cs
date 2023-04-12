@@ -7,29 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Utils.graphic {
-	public class TextureMap:ITextureObject {
+	public class TextureMap:TextureObject {
 
 		public List<TextureMapFrame> Frames = new List<TextureMapFrame>();
 		public int SelectedFrame = 0;
 
-		public TextureMap(Texture2D t) {
-			Texture = t;
+		public TextureMap(Texture2D t):base(t) {
 		}
 
-		public Texture2D Texture {
-			get; set;
-		}
-
-		public Rectangle Source {
+		public override Rectangle Source {
 			get { return Frames[SelectedFrame].Bounds; }
-		}
-
-		public int Width {
-			get { return Source.Width; }
-		}
-
-		public int Height {
-			get { return Source.Height; }
 		}
 
 		public struct TextureMapFrame {

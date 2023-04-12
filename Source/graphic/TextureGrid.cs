@@ -9,7 +9,7 @@ using System.Xml;
 using Utils.save;
 
 namespace Utils.graphic {
-	public class TextureGrid:ITextureObject {
+	public class TextureGrid:TextureObject {
 
 		public readonly int CellWidth;
 		public readonly int CellHeight;
@@ -17,32 +17,20 @@ namespace Utils.graphic {
 		public readonly int Rows;
 		public Point SelectedCell;
 
-		public TextureGrid(Texture2D t, int cellWidth, int cellHeight) {
-			Texture = t;
+		public TextureGrid(Texture2D t, int cellWidth, int cellHeight):base(t) {
 			CellWidth = cellWidth;
 			CellHeight = cellHeight;
 			Columns = t.Width / cellWidth;
 			Rows = t.Height / cellHeight;
-		}
-
-		public Texture2D Texture {
-			get; set;
+			Origin = new Rectangle(0, 0, CellWidth, CellHeight);
 		}
 
 		public Rectangle GetCell(Point cellpos) {
 			return new Rectangle(cellpos.X * CellWidth, cellpos.Y * CellHeight, CellWidth, CellHeight);
 		}
 
-		public Rectangle Source {
+		public override Rectangle Source {
 			get { return GetCell(SelectedCell); }
-		}
-
-		public int Width {
-			get { return Source.Width; }
-		}
-
-		public int Height {
-			get { return Source.Height; }
 		}
 
 		public TextureSelection GetSelection(Point cell) {
