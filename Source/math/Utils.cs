@@ -49,7 +49,7 @@ namespace Utils.math {
 		public static List<Point> LerpLine(Point start, Point end) {
 			var output = new List<Point>();
 
-			float n = Distance(start, end);
+			float n = LerpDistance(start, end);
 			for (var step = 0; step <= n; step++) {
 				float t = n == 0 ? 0f : step / n;
 				output.Add(Lerp(start, end, t));
@@ -57,7 +57,8 @@ namespace Utils.math {
 			return output;
 		}
 
-		public static int Distance(Point start, Point end) {
+		/// <summary> Distance function for LerpLine </summary>
+		private static int LerpDistance(Point start, Point end) {
 			return Math.Max(Math.Abs(end.X - start.X), Math.Abs(end.Y - start.Y));
 		}
 
