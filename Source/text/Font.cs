@@ -12,11 +12,12 @@ namespace Utils.text {
 		public const string LettersUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		public const string LettersLower = "abcdefghijklmnopqrstuvwxyz";
 		public const string Numbers = "1234567890";
-		public const string NumRowLower = "1234567890-=";
-		public const string NumRowUpper = "!@#$%^&*()_+";
+		public const string NumRowLower = "`1234567890-=";
+		public const string NumRowUpper = "~!@#$%^&*()_+";
 		public const string SpecialCharsLower = ",./;'[]\\";
-		public const string SpecialCharsUpper = "<>?:{}|";
+		public const string SpecialCharsUpper = "<>?:\"{}|";
 		public const char Newline = '\n';
+		public const string FontStandard = LettersUpper + LettersLower + NumRowLower + NumRowUpper + SpecialCharsLower + SpecialCharsUpper;
 
 		public Texture2D Graphic;
 		public Dictionary<char, Rectangle> CharData = new Dictionary<char, Rectangle>();
@@ -81,16 +82,6 @@ namespace Utils.text {
 			get { return CharData[c]; }
 		}
 
-		public static Font GetFontTiny(Texture2D t) {
-			return new Font(t, new Rectangle(1, 0, 1, 1), 3, 5, LettersUpper + Newline + LettersLower + Newline + NumRowLower + SpecialCharsLower + Newline + NumRowUpper + SpecialCharsUpper, '?',
-				Tuple.Create('M', 5), Tuple.Create('N', 4), Tuple.Create('O', 4), Tuple.Create('Q', 4), Tuple.Create('U', 4), Tuple.Create('V', 5), Tuple.Create('W', 5),
-				Tuple.Create('Y', 5), Tuple.Create('Z', 4), Tuple.Create('f', 2), Tuple.Create('g', 2), Tuple.Create('i', 1), Tuple.Create('j', 1), Tuple.Create('l', 1),
-				Tuple.Create('m', 5), Tuple.Create('r', 2), Tuple.Create('w', 5), Tuple.Create(',', 1), Tuple.Create('.', 1), Tuple.Create('/', 4), Tuple.Create(';', 1),
-				Tuple.Create('\'', 1), Tuple.Create('[', 2), Tuple.Create(']', 2), Tuple.Create('\\', 4), Tuple.Create('!', 1), Tuple.Create('#', 5), Tuple.Create('$', 3),
-				Tuple.Create('%', 4), Tuple.Create('&', 4), Tuple.Create('(', 2), Tuple.Create(')', 2), Tuple.Create(':', 1), Tuple.Create('|', 1)
-				);
-		}
-
 		private Dictionary<char, Rectangle> ParseSizes(Texture2D g, string charset) {
 			charset = charset.Replace("\n", String.Empty);
 			var chardata = new Dictionary<char, Rectangle>();
@@ -98,14 +89,14 @@ namespace Utils.text {
 
 			List<int> hsplits = new List<int>();
 			for (int y = 0; y < g.Height; y++) {
-				bool clear = true;
+				bool full = true;
 				for (int x = 0; x < g.Width; x++) {
-					if (graphic.Utils.GetPixel(gdata, x, y, g.Width).A > 0) {
-						clear = false;
+					if (graphic.Utils.GetPixel(gdata, x, y, g.Width).A == 0) {
+						full = false;
 						break;
 					}
 				}
-				if (clear) hsplits.Add(y);
+				if (full) hsplits.Add(y);
 			}
 			hsplits.Add(g.Height);
 
@@ -119,20 +110,20 @@ namespace Utils.text {
 				}
 
 				for (int x = 0; x < g.Width; x++) {
-					bool clear = true;
+					bool full = true;
 					for (int y = charrect.Y; y < charrect.Bottom; y++) {
-						if (graphic.Utils.GetPixel(gdata, x, y, g.Width).A > 0) {
-							clear = false;
+						if (graphic.Utils.GetPixel(gdata, x, y, g.Width).A == 0) {
+							full = false;
 							break;
 						}
 					}
 
 					if (x == g.Width - 1) { //Catch last char on line if its right seperation would be outofbounds
 						x++;
-						clear = true;
+						full = true;
 					}
 
-					if (clear) {
+					if (full) {
 						charrect.Width = x - charrect.X;
 						if (charrect.Width == 0) break; //Starts next line if two clear lines in a row
 						chardata.Add(charset[nextchar], charrect);

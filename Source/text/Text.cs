@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -93,6 +94,7 @@ namespace Utils.text {
 		}
 
 		private Rectangle DrawChar(SpriteBatch s, char c, Point pos, Color color) {
+			if (c == '\r') return new Rectangle(pos, Point.Zero);
 			if (c == ' ' || c == Font.Newline) {
 				return GetCharDest(c, pos);
 			}
