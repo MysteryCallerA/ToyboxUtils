@@ -14,6 +14,7 @@ namespace Utils.text {
 		public int Scale = 1;
 		public Point Position;
 		public Color Color = Color.White;
+		public Color? BackColor = null;
 		public Rectangle Mask;
 		public bool UseMask = false;
 		public bool GreedyMask = true;
@@ -96,7 +97,9 @@ namespace Utils.text {
 		private Rectangle DrawChar(SpriteBatch s, char c, Point pos, Color color) {
 			if (c == '\r') return new Rectangle(pos, Point.Zero);
 			if (c == ' ' || c == Font.Newline) {
-				return GetCharDest(c, pos);
+				var r = GetCharDest(c, pos);
+				if (BackColor.HasValue && c == ' ') s.Draw(Font.Graphic, new Rectangle(r.X, r.Y, r.Width + LetterSpace * Scale, r.Height), Font.Pixel, BackColor.Value);
+				return r;
 			}
 			if (c == '\"') {
 				var output = DrawChar(s, '\'', pos, color);
@@ -113,6 +116,7 @@ namespace Utils.text {
 				ApplyMask(ref dest, ref source);
 			}
 
+			if (BackColor.HasValue) s.Draw(Font.Graphic, new Rectangle(dest.X, dest.Y, dest.Width + LetterSpace * Scale, dest.Height), Font.Pixel, BackColor.Value);
 			s.Draw(Font.Graphic, dest, source, color);
 			return unmasked;
 		}
