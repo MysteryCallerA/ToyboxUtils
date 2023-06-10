@@ -27,6 +27,7 @@ namespace Utils.text {
 		public int HPadding = 2;
 		public int VPadding = 2;
 		public int MouseScrollSpeed = 3;
+		private TextMeasurer Measurer = new TextMeasurer();
 
 		/// <summary> Used only for calculating up and down caret movement. Locks horizontal position when LastMoveWasVertical </summary>
 		private Point SelectPoint;
@@ -67,7 +68,7 @@ namespace Utils.text {
 		protected virtual void DrawCaret(SpriteBatch s) {
 			if (CaretBlinkTimer > CaretBlinkTime) return;
 
-			Rectangle select = GetCharRect(Selection);
+			Rectangle select = Measurer.GetCharRect(Selection);
 
 			select.Width = Scale;
 			select.X -= Scale;
@@ -104,7 +105,7 @@ namespace Utils.text {
 		}
 
 		private void DrawSelectionBlockLine(SpriteBatch s, int start, int end) {
-			var r = Rectangle.Union(GetCharRect(start), GetCharRect(end));
+			var r = Rectangle.Union(Measurer.GetCharRect(start), Measurer.GetCharRect(end));
 			var textlocation = r.Location;
 			r.Y -= Scale;
 			r.Height += Scale;
@@ -199,8 +200,8 @@ namespace Utils.text {
 			if (Selection < 0) Selection = 0;
 			if (Selection > Content.Length) Selection = Content.Length;
 
-			if (CharRectsOutdated) {
-				UpdateCharRects();
+			if (Measurer.Outdated) {
+				Measurer.Update(this);
 			}
 
 			if (UseMask && Selection != oldselect) {
@@ -217,14 +218,14 @@ namespace Utils.text {
 		}
 
 		private void UpdateHScroll() {
-			var rect = GetCharRect(Selection);
+			var rect = Measurer.GetCharRect(Selection);
 			if (rect.Left + (HPadding * Scale) > Mask.Right) Scroll.X += (rect.Left + (HPadding * Scale)) - Mask.Right;
 			if (rect.Left - (HPadding * Scale) < Mask.Left) Scroll.X -= Mask.Left - (rect.Left - (HPadding * Scale));
 		}
 
 		private void UpdateVScroll() {
 			if (!Content.Contains(Font.Newline)) return; //HACK bad way of doing this
-			var rect = GetCharRect(Selection);
+			var rect = Measurer.GetCharRect(Selection);
 			if (rect.Bottom + (VPadding * Scale) > Mask.Bottom) Scroll.Y += (rect.Bottom + (VPadding * Scale)) - Mask.Bottom;
 			if (rect.Top - (VPadding * Scale) < Mask.Top) Scroll.Y -= Mask.Top - (rect.Top - (VPadding * Scale));
 		}
@@ -236,7 +237,7 @@ namespace Utils.text {
 		}
 
 		private void ScrollDown() {
-			var rect = GetCharRect(Content.Length);
+			var rect = Measurer.GetCharRect(Content.Length);
 			Scroll.Y += MouseScrollSpeed * Scale;
 			rect.Y -= MouseScrollSpeed * Scale;
 
@@ -367,16 +368,16 @@ namespace Utils.text {
 		}
 
 		private void PressedUp() {
-			var y = GetCharRect(Selection).Y;
-			Selection = FindNearestCharPos(new Point(SelectPoint.X, y) - new Point(0, (LineSpace + Font.CharHeight) * Scale));
+			var y = Measurer.GetCharRect(Selection).Y;
+			Selection = Measurer.FindNearestCharPos(new Point(SelectPoint.X, y) - new Point(0, (LineSpace + Font.CharHeight) * Scale));
 			LastMoveWasVertical = true;
 			SelectingBlock = false;
 			CaretBlinkTimer = 0;
 		}
 
 		private void PressedDown() {
-			var y = GetCharRect(Selection).Y;
-			Selection = FindNearestCharPos(new Point(SelectPoint.X, y) + new Point(0, (LineSpace + Font.CharHeight) * Scale));
+			var y = Measurer.GetCharRect(Selection).Y;
+			Selection = Measurer.FindNearestCharPos(new Point(SelectPoint.X, y) + new Point(0, (LineSpace + Font.CharHeight) * Scale));
 			LastMoveWasVertical = true;
 			SelectingBlock = false;
 			CaretBlinkTimer = 0;
@@ -407,8 +408,8 @@ namespace Utils.text {
 					CursorRequest.Push(MouseCursor.IBeam);
 				}
 			} else {
-				var nearestchar = FindNearestCharPos(mouse.Position + CursorOffset);
-				var rect = GetCharRect(nearestchar);
+				var nearestchar = Measurer.FindNearestCharPos(mouse.Position + CursorOffset);
+				var rect = Measurer.GetCharRect(nearestchar);
 				rect.Inflate((LetterSpace + 1) * Scale, (LetterSpace + 1) * Scale);
 				if (rect.Contains(mouse.Position)) {
 					CursorRequest.Push(MouseCursor.IBeam);
@@ -416,13 +417,13 @@ namespace Utils.text {
 			}
 
 			if (mouse.LeftPress) {
-				Selection = FindNearestCharPos(mouse.Position + CursorOffset);
+				Selection = Measurer.FindNearestCharPos(mouse.Position + CursorOffset);
 				CaretBlinkTimer = 0;
 				LastMoveWasVertical = false;
 				SelectionStart = Selection;
 				SelectingBlock = true;
 			} else if (mouse.Left) {
-				Selection = FindNearestCharPos(mouse.Position + CursorOffset);
+				Selection = Measurer.FindNearestCharPos(mouse.Position + CursorOffset);
 			}
 
 			if (AllowNewline && AllowVScroll) {
