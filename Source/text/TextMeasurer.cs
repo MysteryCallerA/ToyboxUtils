@@ -156,20 +156,30 @@ namespace Utils.text {
 			}
 		}
 
-		public Rectangle FindNearestLine(Point pick) {
+		public Rectangle FindNearestLine(Point pick, out int linenum) {
 			var t = Measured;
 			pick -= t.Position + t.Scroll;
-			Rectangle output = new Rectangle(-1, 0, 0, 0);
+			Rectangle output = Lines.Last();
+			linenum = Lines.Count - 1;
+
 			for (int i = 0; i < Lines.Count; i++) {
 				if (pick.Y < Lines[i].Bottom) {
 					output = Lines[i];
+					linenum = i;
 					break;
 				}
 			}
-			if (output.X == -1) output = Lines.Last();
 
 			output.Location += t.Position + t.Scroll;
 			return output;
+		}
+
+		public Rectangle? PickLine(Point pick, out int linenum) {
+			var output = FindNearestLine(pick, out linenum);
+			if (output.Contains(pick)) return output;
+
+			linenum = -1;
+			return null;
 		}
 
 	}
