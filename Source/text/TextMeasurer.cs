@@ -11,14 +11,16 @@ namespace Utils.text {
 	public class TextMeasurer {
 
 		private Text Measured;
-		public string MeasuredContent = "";
+		private string MeasuredContent = "";
 		private List<Rectangle> Characters = new List<Rectangle>();
 		private List<Rectangle> Words = new List<Rectangle>();
 		private List<Rectangle> Lines = new List<Rectangle>();
 		
-		public Rectangle Bounds {
+		public Point Size {
 			get; private set;
 		}
+
+		//TODO add bounds measuring
 
 		public bool Outdated {
 			get {
@@ -59,6 +61,34 @@ namespace Utils.text {
 
 			MeasuredContent = t.Content;
 			Measured = t;
+			UpdateGroupedBounds();
+		}
+
+		private void UpdateGroupedBounds() {
+			Words.Clear();
+			Lines.Clear();
+			Size = Point.Zero;
+
+			var word = new Rectangle();
+			var line = new Rectangle(0, 0, 0, Measured.LineHeight);
+			for (int i = 0; i < Characters.Count; i++) {
+				line.Width += Characters[i].Right - line.Right;
+				if (MeasuredContent[i] == ' ' || MeasuredContent[i] == Font.Newline) {
+					if (word.Width > 0) Words.Add(word);
+					word.Width = 0;
+					if (MeasuredContent[i] == Font.Newline) {
+						Lines.Add(line);
+						line.Y += line.Height + Measured.LineSpace * Measured.Scale;
+						line.Width = 0;
+					}
+					continue;
+				}
+
+				if (word.Width == 0) word.X = Characters[i].X;
+				word.Width += Characters[i].Right - word.Right;
+			}
+			if (word.Width > 0) Words.Add(word);
+			Lines.Add(line);
 		}
 
 		public Rectangle GetCharRect(int pos) {
@@ -124,6 +154,22 @@ namespace Utils.text {
 			} catch (Exception e) {
 				throw new Exception("CharRects/Content Mismatch: Call Update sometime between when Content is changed and FindNearestCharPos is called.", e);
 			}
+		}
+
+		public Rectangle FindNearestLine(Point pick) {
+			var t = Measured;
+			pick -= t.Position + t.Scroll;
+			Rectangle output = new Rectangle(-1, 0, 0, 0);
+			for (int i = 0; i < Lines.Count; i++) {
+				if (pick.Y < Lines[i].Bottom) {
+					output = Lines[i];
+					break;
+				}
+			}
+			if (output.X == -1) output = Lines.Last();
+
+			output.Location += t.Position + t.Scroll;
+			return output;
 		}
 
 	}
