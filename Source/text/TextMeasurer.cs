@@ -67,7 +67,7 @@ namespace Utils.text {
 		private void UpdateGroupedBounds() {
 			Words.Clear();
 			Lines.Clear();
-			Size = Point.Zero;
+			var newsize = new Point(0, Measured.LineHeight);
 
 			var word = new Rectangle();
 			var line = new Rectangle(0, 0, 0, Measured.LineHeight);
@@ -78,6 +78,8 @@ namespace Utils.text {
 					word.Width = 0;
 					if (MeasuredContent[i] == Font.Newline) {
 						Lines.Add(line);
+						if (newsize.X < line.Width) newsize.X = line.Width;
+						newsize.Y += Measured.LineHeight + Measured.LineSpace * Measured.Scale;
 						line.Y += line.Height + Measured.LineSpace * Measured.Scale;
 						line.Width = 0;
 					}
@@ -88,7 +90,9 @@ namespace Utils.text {
 				word.Width += Characters[i].Right - word.Right;
 			}
 			if (word.Width > 0) Words.Add(word);
+			if (newsize.X < line.Width) newsize.X = line.Width;
 			Lines.Add(line);
+			Size = newsize;
 		}
 
 		public Rectangle GetCharRect(int pos) {
