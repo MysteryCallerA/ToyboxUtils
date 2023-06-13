@@ -186,5 +186,13 @@ namespace Utils.text {
 			return null;
 		}
 
+		public IReadOnlyCollection<Rectangle> GetLines() {
+			return Lines.AsReadOnly();
+		}
+
+		public Rectangle GetLine(int linenum) {
+			return Lines[linenum];
+		}
+
 	}
 }
