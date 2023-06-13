@@ -11,6 +11,9 @@ using Utils.input;
 namespace Utils.text {
 	public class TextInput:Text {
 
+		public static string[] WhitelistInt = { "0","1","2","3","4","5","6","7","8","9","-" };
+		public static string[] WhitelistFloat = { "0","1","2","3","4","5","6","7","8","9","-","." };
+
 		/// <summary> This event is called for every individual key press before the keypress is applied to the content. You can use KeyPressArgs to change how the object responds to specific keys. </summary>
 		public EventHandler<KeyPressArgs> OnKeypress;
 
@@ -51,6 +54,8 @@ namespace Utils.text {
 		public override void Draw(SpriteBatch s, Color c) {
 			base.Draw(s, c);
 
+			if (Measurer.Outdated) Measurer.Update(this);
+
 			if (SelectingBlock && SelectionStart != Selection) {
 				DrawSelectionBlock(s);
 			} else if (CaretEnabled && CaretIsDrawable) {
@@ -89,7 +94,7 @@ namespace Utils.text {
 			}
 		}
 
-		protected virtual void DrawSelectionBlock(SpriteBatch s) {
+		protected virtual void DrawSelectionBlock(SpriteBatch s) { //TODO test replacing this with new BackColor
 			int start = Math.Min(SelectionStart, Selection);
 			int end = Math.Max(SelectionStart, Selection);
 			end--;
@@ -111,7 +116,10 @@ namespace Utils.text {
 			r.Height += Scale;
 			s.Draw(Font.Graphic, r, Font.Pixel, ColorSelectBack);
 			string text = Content.Substring(start, end - start + 1);
+			var backColor = BackColor;
+			BackColor = null;
 			Draw(s, ColorSelectText, textlocation, text);
+			BackColor = backColor;
 		}
 
 		public string GetSelectedText() {
