@@ -69,7 +69,7 @@ namespace Utils.text {
 			Lines.Clear();
 			var newsize = new Point(0, Measured.LineHeight);
 
-			var word = new Rectangle();
+			var word = new Rectangle(0, 0, 0, Measured.LineHeight);
 			var line = new Rectangle(0, 0, 0, Measured.LineHeight);
 			for (int i = 0; i < Characters.Count; i++) {
 				line.Width += Characters[i].Right - line.Right;
@@ -82,6 +82,7 @@ namespace Utils.text {
 						newsize.Y += Measured.LineHeight + Measured.LineSpace * Measured.Scale;
 						line.Y += line.Height + Measured.LineSpace * Measured.Scale;
 						line.Width = 0;
+						word.Y += line.Height + Measured.LineSpace * Measured.Scale;
 					}
 					continue;
 				}
@@ -192,6 +193,19 @@ namespace Utils.text {
 
 		public Rectangle GetLine(int linenum) {
 			return Lines[linenum];
+		}
+
+		public Rectangle? PickWord(Point pick, out int wordnum) {
+			pick -= Measured.Position + Measured.Scroll;
+			wordnum = -1;
+			for (int i = 0; i < Words.Count; i++) {
+				if (!Words[i].Contains(pick)) continue;
+				wordnum = i;
+				var output = Words[i];
+				output.Offset(Measured.Position + Measured.Scroll);
+				return output;
+			}
+			return null;
 		}
 
 	}
