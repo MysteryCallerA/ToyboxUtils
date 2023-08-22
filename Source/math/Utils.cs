@@ -13,6 +13,10 @@ namespace Utils.math {
 			return (int)Math.Floor((double)top / bot);
 		}
 
+		public static int CeilDiv(int top, int bot) {
+			return (int)Math.Ceiling((double)top / bot);
+		}
+
 		public static int GCD(int a, int b) {
 			while (b > 0) {
 				int rem = a % b;
